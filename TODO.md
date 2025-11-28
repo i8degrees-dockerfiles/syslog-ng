@@ -1,8 +1,7 @@
 
-# PROJECT_NAME
+# syslog-ng
 
 ## TODO
 
 - [ ] *...*
-- [ ] *...*
-- [ ] 
+

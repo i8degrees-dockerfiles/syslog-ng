@@ -1,11 +1,29 @@
 
-# PROJECT_NAME
+# syslog-ng
 
-*...*
+`syslogd` setup for remote logging over LAN.
+
+I chose `syslog-ng` in particular as it is what
+I am most familiar with at the moment, and did
+not wish to spend a whole lot of time 
+bootstrapping this.
 
 ## usage
 
-*...*
+The idea for this project is to be able to quickly bring up
+a `syslogd` daemon that is ready for recording logs from
+embedded hardware, such as a cheap router that is running
+FreshTomato. In this scenario, there is often a logging
+page that has a toggle for sending its log stream over to
+a remote `syslogd` service.
+
+This is very useful for one that is actively developing
+runtime scripts for the firmware that are executed during
+times in which `syslogd` may not yet have access to a
+filesystem to record on until some condition is met.
+
+- portal
+    - `docker.fs1.home:514/udp`
 
 ### deps
 
@@ -74,4 +92,6 @@ docker stop service-proxy # service name
 
 ## reference documents
 
-[0]: https://github.com/i8degrees-dockerfiles
+[0]: https://github.com/i8degrees-dockerfiles/syslog-ng.git
+[5]: https://hub.docker.com/r/linuxserver/syslog-ng
+
