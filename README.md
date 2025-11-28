@@ -58,6 +58,8 @@ need to be revoked at some point in the future.
 Finally, we can bootstrap the project! Cross your fingers, say
 your prayers or however your typical ritual for this goes:
 
+### bringing up the container
+
 ```shell
 docker compose up -d
 docker compose down
@@ -65,15 +67,37 @@ docker compose up -d --force-recreate
 docker compose up -d service-server --force-recreate
 ```
 
+### container logs
+
 ```shell
 # Check status of each service
 docker compose logs #--since=5m -f
+```
+
+### other commands
 
 ```shell
 # Start and stop an individual service
 docker start service-db # service name
 docker stop service-proxy # service name
 ```
+
+### initial setup of container
+
+It is strongly recommended that you use a dedicated account setup
+for docker services as this can decrease the attack field by using
+unprivileged users that can only access a minimal set of files.
+
+This is done by creating the user on the host and then opting in
+to the use of the user within the container by setting
+`PUID` and `PGID` in your site-local `.env` file.
+
+Every time you [bring up the container](#bringing-up-the-container),
+you must ensure that *...*
+
+- `docker exec -it syslog-ng-1 touch /var/log/messages /var/log/messages-kv.log`
+- `docker exec -it syslog-ng-1 chown $PUID:$PGID /var/log/messages /var/log/messages-kv.log`
+- `docker exec -it syslog-ng-1 killall -HUP syslog-ng`
 
 ### inspecting the live container
 
