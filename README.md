@@ -87,8 +87,11 @@ docker start service-db # service name
 docker stop service-proxy # service name
 ```
 
-- bind mounts
-  * `./mounts/...`
+### inspecting the live container 
+
+```shell
+docker exec -it syslog-ng-1 /bin/bash
+```
 
 ## reference documents
 
