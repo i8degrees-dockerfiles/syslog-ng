@@ -10,6 +10,7 @@ networks:
     attachable: true
     driver: overlay
     external: true
+
 volumes:
   config:
 
@@ -18,27 +19,39 @@ services:
     restart: unless-stopped
     image: lscr.io/linuxserver/syslog-ng:4.8.3
     container_name: syslog-ng-1
+    # WARNING(JEFF): The following bootstrap command has not
+    # yet been tested. Use at your own risk.
+    #command: [
+      #"touch /var/log/messages /var/log/messages-kv.log"
+      #"chown $PUID:$PGID /var/log/messages /var/log/messages-kv.log"
+      #"killall -HUP syslog-ng"
+    #]
     env_file:
       - "./.env"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      # NOTE(JEFF): Default configuration lives here
       - config:/config:rw
-      #- mounts/config/syslog-ng.conf:/config
+      # NOTE(JEFF): Replace (or compliment) the default configuration
+      #- ./mounts/config/syslog-ng.conf:/config
     ports:
       - 514:5514/udp
       #- 601:6601/tcp
       #- 6514:6514/tcp
-    #networks:
-      #- traefik-proxy
+    networks:
+      - traefik-proxy
     labels:
-      # WARNING(JEFF): We do not have Traefik configured to accept UDP
-      # or TCP routes as of this time. This must be implemented before
-      # one can consider enabling the proxy settings below.
-      - "traefik.enable=false"
-      - "traefik.http.routers.syslog-ng-fs1.rule=Host(`syslogd.fs1.home`) && PathPrefix(`/`)"
-      - "traefik.http.routers.syslog-ng-fs1.entrypoints=syslogd"
-      - "traefik.http.services.syslog-ng-fs1.loadbalancer.server.port=514"
-      - "traefik.http.routers.syslog-ng-fs1.service=syslog-ng-fs1"
-      #- "traefik.http.routers.syslog-ng-fs1.tls.certresolver=staging-web-acme"
-
+      - "traefik.enable=true"
+      # syslog-udp
+      - "traefik.udp.routers.syslog-ng-fs1-udp.entryPoints=syslog"
+      - "traefik.udp.routers.syslog-ng-fs1-udp.service=syslog-ng-fs1-udp"
+      - "traefik.udp.routers.syslog-ng-fs1-udp.rule=HostSNI(`*`)"
+      - "traefik.udp.services.syslog-ng-fs1-udp.loadBalancer.servers.0.address=syslog.fs1.home:514"
+      # syslog-tcp
+      # ...
+      # syslog-tls
+      #- "traefik.tcp.routers.syslog-ng-fs1-tls.entryPoints=syslog-tls"
+      #- "traefik.tcp.routers.syslog-ng-fs1-tls.service=syslog-ng-fs1-tls"
+      #- "traefik.tcp.routers.syslog-ng-fs1-tls.rule=HostSNI(`*`)"
+      #- "traefik.tcp.services.syslog-ng-fs1-tls.loadBalancer.servers.0.address=syslog.fs1.home:6514"
