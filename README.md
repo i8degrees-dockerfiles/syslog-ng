@@ -23,7 +23,13 @@ times in which `syslogd` may not yet have access to a
 filesystem to record on until some condition is met.
 
 - portal
-    - `docker.fs1.home:514/udp`
+    - `syslogd.fs1.home:514/udp`
+    - `syslogd.fs1.home:601/tcp`
+        - This route is disabled in [compose.yml](./compose.yml); re-enable by
+        uncommenting the port under the `ports` declaration of the service.
+    - `syslogd.fs1.home:6514/tcp`
+        - This route is disabled in [compose.yml](./compose.yml); re-enable by
+        uncommenting the port under the `ports` declaration of the service.
 
 ### deps
 
@@ -69,10 +75,20 @@ docker start service-db # service name
 docker stop service-proxy # service name
 ```
 
-### inspecting the live container 
+### inspecting the live container
 
 ```shell
 docker exec -it syslog-ng-1 /bin/bash
+```
+
+### inspecting the remote log endpoint
+
+By default, we do not output the logged messages that this container has
+captured whatsoever. In order to see the messages collected, you must read
+the stored log file on the container.
+
+```shell
+docker exec -it syslog-ng-1 tail -n50 -f /var/log/messages
 ```
 
 ## reference documents
